@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/admin_panel.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Document</title>
+</head>
+<body>
+    <form method="">
+        <div class="button_group">
+            <button type="button" class="btn btn-primary product_type selected_product_type" id="clothes_btn">Одежда</button>
+            <button type="button" class="btn btn-primary product_type" id="shoes_btn">Обувь</button>
+            <button type="button" class="btn btn-primary product_type" id="accessories_btn">Аксессуары</button>
+          </div>
+          <br>
+        <div id="create_cloth">
+            <div class="form-group">
+                <label for="product_name">Название продукта</label> 
+                <input type="text" class="form-control" id="product_name" name="product_name">
+            </div>
+
+            <div class="form-group">
+                <label for="product_description">Описание продукта</label> 
+                <textArea class="form-control" id="product description"></textArea>
+            </div>
+
+            <div class="form-group">
+                <label for="category_gender">Категория</label> 
+                <select id="category_gender" class="form-control" name="category_gender">
+                    <option value="male">Мужчинам</option>
+                    <option value="female">Женщинам</option>
+                    <option value="kids">Детям</option>
+                    <option value="multisex">Мультисекс</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory">Субкатегория продукта</label> 
+                <select name="subcategory" id="subcategory" class="form-control">
+                </select>
+                <input type="text" id="other_subcategory" class="form-control" placeholder="Название другой субкатегории">
+            </div>
+
+            <div class="form-group">
+                <label for="">Merch</label>
+                <select name="select_merch" id="select_merch" class="form-control">
+
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="season">Сезон</label>
+                <select name="season" id="season" class="form-control">
+                    <option value="summer">Лето</option>
+                    <option value="winter">Зима</option>
+                    <option value="multi">Мульти</option>
+                    <option value="demiseason">Демисезон</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="product_material">Материал</label>
+                <div id="clothes_material">
+                    <div class="button_group">
+                        <button type="button" class="btn btn-primary" onclick="addMaterial()" style="width: 40%">+</button>
+                        <button type="button" class="btn btn-primary" onclick="removeLastMaterial()" style="width: 40%">-</button>                    
+                    </div>
+                    <br>
+                </div>
+
+                <div id="shoes_material">
+                  <select name="select_shoes_material" id="select_shoes_material" class="form-control">
+                  </select>
+                  <input type="text" id="other_shoes_material" class="form-control" placeholder="Название другого материала обуви">
+                </div>
+                
+                
+            </div>
+
+            
+
+            <div class="form-group">
+                <label for="product_color">Цвет</label> 
+                <div class="button_group">
+                    <input type="color" id="color_hex">
+                    <input type="text" id="product_color" class="form-control" name="product_color" placeholder="Название цвета">
+                </div>
+            </div>
+
+            <div class="form-group" id="clothes_size">
+                <label for="product_size">Размер одежды</label>
+                <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xs">xs
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="s">s
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="m">m
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="l">l
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xl">xl
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xxl">xxl
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xxxl">xxxl
+                    </label>
+                  </div>
+            </div>
+
+            <div class="form-group" id="shoes_size">
+                <label for="product_size">Размер обуви</label>
+                <div class="button-group">
+                    <input type="text" class="form-control" placeholder="from">
+                    <input type="text" class="form-control" placeholder="to">
+                    <small id="emailHelp" class="form-text text-muted">С интервалом 0.5</small>
+                </div>
+            </div>
+
+            <div class="form-group" id="accessory_size">
+                <label for="product_size">Размер аксессуара</label>
+                <div class="button-group">
+                    <input type="text" class="form-control">
+                    <small id="emailHelp" class="form-text text-muted">Желательно добавлять единицу измерения</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="product_brand">Бренд</label>
+                <select name="product_brand" id="product_brand" class="form-control">
+                  <input type="text" id="other_brand" class="form-control" placeholder="Название другого бренда...">
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="product_brand">Страна производителя</label>
+                <select name="manufacturer" id="manufacturer" class="form-control">
+                </select>
+                
+            </div>
+
+
+            <div class="form-group">
+                <label for="product_base_price">Изначальная цена</label>
+                <input type="text" id="product_base_price" class="form-control" name="product_base_price">
+                <small id="emailHelp" class="form-text text-muted">Если бы это покупали не у нас</small>
+            </div>
+
+            
+            <div class="form-group">
+                <label for="product_sales_price">Цена по скидке</label>
+                <input type="text" id="product_sales_price" class="form-control" name="product_sales_price">
+                <small id="emailHelp" class="form-text text-muted">Наша цена</small>
+                
+            </div>
+
+            
+            <div class="form-group">
+                <label for="product_style">Стиль</label>
+                <select name="product_style" class="form-control" id="product_style">
+                    <option value="Повседневный">Повседневный</option>
+                    <option value="Спортивный">Спортивный</option>
+                    <option value="Школьный">Школьный</option>
+                    <option value="Деловой">Деловой</option>
+                    <option value="Вечерний">Вечерний</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="sport_style_div">
+                <label for="sport_type">Вид спорта</label>
+                <select name="sport_type" id="sport_type" class="form-control">
+                </select>
+                <input type="text" name="other_sport_type" id="other_sport_type" class="form-control" placeholder="Другой вид спорта">
+            </div>
+
+            
+            <div class="form-group" id="pattern_div">
+                <label for="product_pattern" id="product_pattern_label">Узор</label>
+                <input type="text" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="product_images">Фотки</label>
+            <input type="file" class="form-control" id="select-images" multiple>
+            </div>
+        </div>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+  <script src="/scripts/admin_panel.js"></script>
+</body>
+</html>

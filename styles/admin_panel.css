@@ -1,0 +1,31 @@
+form {
+    margin: 20px auto;
+    width: 500px;
+}
+
+#product_basic_info * {
+    margin-top: 10px;
+}
+
+#shoes_material {
+    display: none;
+}
+
+.button_group {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 10px;
+    align-items: stretch;
+}
+
+.btn {
+    flex-grow: 1;
+}
+
+.product_type {
+    background-color: gray !important;
+}
+
+.selected_product_type {
+    background-color: cornflowerblue !important;
+}
