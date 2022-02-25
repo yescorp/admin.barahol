@@ -2,30 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/admin_panel.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="/styles/admin_panel.css">
     <title>Document</title>
 </head>
 <body>
-    <form method="">
+
+  <section class="vh-100 gradient-custom" id="login_form">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card bg-dark text-white" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+  
+              <div class="mb-md-5 mt-md-4 pb-5">
+  
+                <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                <p class="text-white-50 mb-5">Please enter your credentials!</p>
+  
+                <div class="form-outline form-white mb-4">
+                  <input type="email" id="typeEmailX" class="form-control form-control-lg" />
+                  <label class="form-label" for="typeEmailX">Email</label>
+                </div>
+  
+                <div class="form-outline form-white mb-4">
+                  <input type="password" id="typePasswordX" class="form-control form-control-lg" />
+                  <label class="form-label" for="typePasswordX">Password</label>
+                </div>
+  
+                <button class="btn btn-outline-light btn-lg px-5" id="loginX" type="submit">Login</button>
+  
+              </div>
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <form method="" id="product_info">
         <div class="button_group">
             <button type="button" class="btn btn-primary product_type selected_product_type" id="clothes_btn">Одежда</button>
             <button type="button" class="btn btn-primary product_type" id="shoes_btn">Обувь</button>
             <button type="button" class="btn btn-primary product_type" id="accessories_btn">Аксессуары</button>
           </div>
           <br>
-        <div id="create_cloth">
-            <div class="form-group">
+        <div id="create_product">
+          <div class="form-group">
+            <label for="serial_number">Серийный номер</label> 
+            <input type="text" class="form-control" id="serial_number" name="product_name">
+          </div>  
+          
+          <div class="form-group">
                 <label for="product_name">Название продукта</label> 
                 <input type="text" class="form-control" id="product_name" name="product_name">
             </div>
 
             <div class="form-group">
                 <label for="product_description">Описание продукта</label> 
-                <textArea class="form-control" id="product description"></textArea>
+                <textArea class="form-control" id="product_description"></textArea>
             </div>
 
             <div class="form-group">
@@ -34,7 +72,7 @@
                     <option value="male">Мужчинам</option>
                     <option value="female">Женщинам</option>
                     <option value="kids">Детям</option>
-                    <option value="multisex">Мультисекс</option>
+                    <option value="unisex">Мультисекс</option>
                 </select>
             </div>
 
@@ -57,7 +95,9 @@
                 <select name="season" id="season" class="form-control">
                     <option value="summer">Лето</option>
                     <option value="winter">Зима</option>
-                    <option value="multi">Мульти</option>
+                    <option value="fall">Осень</option>
+                    <option value="spring">Весна</option>
+                    <option value="multiseason">Мультисезон</option>
                     <option value="demiseason">Демисезон</option>
                 </select>
             </div>
@@ -91,36 +131,45 @@
                 </div>
             </div>
 
+            <div class="form-group">
+              <label for="max_series_count">Максимальное количество сеток</label> 
+              <div class="button_group">
+                  <input type="number" id="max_series_count" class="form-control">
+                </div>
+            </div>
+
+          
+
             <div class="form-group" id="clothes_size">
                 <label for="product_size">Размер одежды</label>
                 <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xs">xs
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="XS">XS
                     </label>
                   </div>
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="s">s
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="S">S
                     </label>
                   </div>
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="m">m
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="M">M
                     </label>
                   </div>
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="l">l
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="L">L
                     </label>
                   </div>
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xl">xl
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="XL">XL
                     </label>
                   </div>
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="xxl">xxl
+                      <input type="checkbox" class="form-check-input clothes_size_checkbox" value="XXL">XXL
                     </label>
                   </div>
                   <div class="form-check">
@@ -148,6 +197,13 @@
             </div>
 
             <div class="form-group">
+              <label for="expiration_date">Expiration date</label> 
+              <div class="button_group">
+                  <input type="date" id="expiration_date" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="product_brand">Бренд</label>
                 <select name="product_brand" id="product_brand" class="form-control">
                   <input type="text" id="other_brand" class="form-control" placeholder="Название другого бренда...">
@@ -165,14 +221,14 @@
 
             <div class="form-group">
                 <label for="product_base_price">Изначальная цена</label>
-                <input type="text" id="product_base_price" class="form-control" name="product_base_price">
+                <input type="number" id="product_base_price" class="form-control" name="product_base_price">
                 <small id="emailHelp" class="form-text text-muted">Если бы это покупали не у нас</small>
             </div>
 
             
             <div class="form-group">
                 <label for="product_sales_price">Цена по скидке</label>
-                <input type="text" id="product_sales_price" class="form-control" name="product_sales_price">
+                <input type="number" id="product_sales_price" class="form-control" name="product_sales_price">
                 <small id="emailHelp" class="form-text text-muted">Наша цена</small>
                 
             </div>
@@ -199,14 +255,19 @@
             
             <div class="form-group" id="pattern_div">
                 <label for="product_pattern" id="product_pattern_label">Узор</label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="product_pattern">
             </div>
 
             <div class="form-group">
                 <label for="product_images">Фотки</label>
-            <input type="file" class="form-control" id="select-images" multiple>
-            </div>
+                <input type="file" class="form-control" id="select-images" multiple>
+                <small id="image-progress" class="form-text text-muted"></small>
+                
+              </div>
         </div>
+        <br>
+        <button type="submit" onclick="return false;" id="create_product_submit" class="btn btn-primary form-control">Создать продукт одежды!</button>
+        <br>
     </form>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

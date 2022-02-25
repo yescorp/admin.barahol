@@ -29,3 +29,7 @@ form {
 .selected_product_type {
     background-color: cornflowerblue !important;
 }
+
+#product_info{
+    /*display: none;*/
+}
