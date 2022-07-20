@@ -1,0 +1,28 @@
+{
+    "serialNumber":"123",
+    "name":"123",
+    "description":"123",
+    "category":{
+        "name":"female"
+    },
+    "shoesCategory":{
+        "name":"Домашняя обувь"
+    },
+    "merch":{
+        "name":"None"
+        },
+    "season":{
+        "name":"multiseason"
+        },
+    "material":{"name":"бархат"},
+    "color":{"name":"123","hexCode":"#000000"},
+    "availableSizes":[{"shoesSize":"12"},{"shoesSize":"12.5"}],
+    "maxSeriesCount":12,
+    "brand":{"name":"Alberto Guardiani","madeIn":"BY"},
+    "price":12,
+    "salesPrice":12,
+    "endDate":"2022-03-12T00:00:00",
+    "style":"Повседневный",
+    "sportType":{"name":"none"},
+    "images": ["testImage"]
+}

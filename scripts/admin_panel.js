@@ -1,25 +1,171 @@
 var selected_product_type = "clothes";
 var categories;
 var images = [];
+var filesUploaded = false;
 var fileList;
+var page = 1;
+
+
+function Spinner(){
+	Spinner.element=document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	let c=document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+	Spinner.element.setAttribute('width','100');
+	Spinner.element.setAttribute('height','100');
+	c.setAttribute('viewBox','0 0 100 100');
+	c.setAttribute('cx','50');
+	c.setAttribute('cy','50');
+	c.setAttribute('r','42');
+	c.setAttribute('stroke-width','16');
+	c.setAttribute('stroke','#2196f3');
+	c.setAttribute('fill','transparent');
+    Spinner.element.classList.add("spinner");
+	Spinner.element.appendChild(c);
+	$("#white-background").append(Spinner.element)
+}
+Spinner.id=null;
+Spinner.element=null;
+Spinner.show=function(){
+	const c=264,m=15;
+	Spinner.element.style.display='block';
+	move1();
+	function move1(){
+		let i=0,o=0;
+		move();
+		function move(){
+			if(i==c)move2();
+			else{
+				i+=4;o+=8;
+				Spinner.element.setAttribute('stroke-dasharray',i+' '+(c-i));
+				Spinner.element.setAttribute('stroke-dashoffset',o)
+				Spinner.id=setTimeout(move,m)
+			}
+		}
+	}
+	function move2(){
+		let i=c,o=c*2;
+		move();
+		function move(){
+			if(i==0)move1();
+			else{
+				i-=4;o+=4;
+				Spinner.element.setAttribute('stroke-dasharray',i+' '+(c-i));
+				Spinner.element.setAttribute('stroke-dashoffset',o)
+				Spinner.id=setTimeout(move,m)
+			}
+		}
+	}
+};
+Spinner.hide=function(){
+	Spinner.element.style.display='none';
+	if(Spinner.id){
+		clearTimeout(Spinner.id);
+		Spinner.id=null
+	}
+	Spinner.element.setAttribute('stroke-dasharray','0 264');
+	Spinner.element.setAttribute('stroke-dashoffset','0')
+};
+
 
 $(document).ready(function(){
+    refreshTokens();
+
+    Spinner();
+    Spinner.show();
+    
+    loadProducts();
+
+
+    $("#load-more").click(function(){
+        page++;
+        loadProducts();
+    });
 
     const fileSelector = document.getElementById('select-images');
   fileSelector.addEventListener('change', (event) => {
+    $("img").remove();
     fileList = event.target.files;
     console.log(fileList);
+    images = [];
+
+    for(let i = 0; i < fileList.length; i++){
+        let file = fileList[i];
+        if (file.type && !file.type.startsWith('image/')) {
+            console.log('File is not an image.', file.type, file);
+            continue;
+        }
+        
+        const reader = new FileReader();
+    
+        reader.addEventListener('load', (event) => {
+            
+
+            let img = document.createElement("img");
+            img.height = "100";
+            img.src = event.target.result;
+            $("#product_images_div").append(img);
+            console.log(event.target.result);
+            images.push(event.target.result.replace(/^(.){0,};base64,/, ""));
+            if(images.length > 0){
+                filesUploaded = true;
+            }
+
+            
+        }, false);
+
+        reader.addEventListener('progress', (event) => {
+            if (event.loaded && event.total) {
+            const percent = (event.loaded / event.total) * 100;
+            console.log(`Progress: ${Math.round(percent)}`);
+            $("#image-progress").text(`Progress: ${Math.round(percent)}`);
+            }
+        });
+    
+        reader.readAsDataURL(file);
+    }
   });
 
-    $("#loginX").click(function(){
-        loginEmail();
+  if(sessionStorage.getItem("refreshToken") != null){
+    refreshTokens();
+  }
+
+    
+
+    $("#show_product_creation_form").click(function(){
+        console.log("button clicked");
+        $("#product_info").show(); 
+        $("#exit_creation").show();
+        $("#white-background").show();
+        $("#main_body").hide();
     });
 
-    $("#create_product_submit").click(function(){
+    $("#exit_creation").click(function (){
+        $("#product_info").hide(); 
+        $("#exit_creation").hide();
+        $("#white-background").hide();
+        $("#main_body").show();
+    });
+
+    $("#create_product_submit").click(async function(){
         
+        $("#product_info").hide(); 
+        $("#exit_creation").hide();
+        
+        $("#white-background").show();
+
         if(selected_product_type == "clothes"){
-            createProductClothes();
+            await createProductClothes();
         }
+        else if(selected_product_type == "shoes"){
+            await createProductShoes();
+        }
+        else if (selected_product_type == "accessories"){
+            await createProductAccessories();
+        }
+
+        $("#white-background").hide();
+        $("#main_body").show();
+
+        document.location.reload();
     });
 
     fetch('/scripts/categories.json')
@@ -199,6 +345,7 @@ function showClothes(){
         $("#clothes_btn").addClass("selected_product_type");
         $("#shoes_btn").removeClass("selected_product_type");
         $("#accessories_btn").removeClass("selected_product_type");
+        $("#accessory_material_div").hide();
 
         $("#subcategory").empty();
         addOthersOption("subcategory");
@@ -222,6 +369,7 @@ function showAccessories(){
     $("#accessories_btn").addClass("selected_product_type");
     $("#shoes_btn").removeClass("selected_product_type");
     $("#clothes_btn").removeClass("selected_product_type");
+    $("#accessory_material_div").show();
 
     $("#subcategory").empty();
     addOthersOption("subcategory");
@@ -246,6 +394,7 @@ function showShoes(){
         $("#shoes_btn").addClass("selected_product_type");
         $("#accessories_btn").removeClass("selected_product_type");
         $("#clothes_btn").removeClass("selected_product_type");
+        $("#accessory_material_div").hide();
 
         $("#subcategory").empty();
         addOthersOption("subcategory");
@@ -260,118 +409,15 @@ function showShoes(){
 
 }
 
-async function loginEmail() {
-    var email = $("#typeEmailX").val();
-    var password = $("#typePasswordX").val();
-    
-    var data = {Identity: email, Password: password};
-
-    console.log(data);
-
-    var response = await fetch('https://api.barahol.kz/account/login/email', {
-                    method: 'POST',
-                    redirect: 'follow',
-                    headers: {
-                        "Accept": "application/json; charset=utf-8",
-                        "Content-Type": "application/json;charset=utf-8",
-                      },
-                    body: JSON.stringify(data)
-                });
-
-
-    if(response.status != 200){
-        return;
-    } else{
-        var responseData = (await response.json());
-    console.log(responseData);
-    console.log(response.status);
-
-    console.log(email + " " + password);
-    
-    localStorage.setItem("refreshToken", responseData["refreshToken"]);
-    localStorage.setItem("accessToken", responseData["accessToken"]);
-
-    $("#product_info").show();
-    $("#login_form").hide();
-
-    let testData = {
-        "serialNumber": "фыв",
-        "name": "test2",
-        "description": "testDescription",
-        "category": {
-            "name": "testCategory"
-        },
-        "clothesCategory": {"name": "T-Shirt"},
-        "merch": {
-            "name": "testMerch"
-        },
-        "season": {"name": "summer"},
-        "materials": [
-            {
-                "material": {"name":"testMaterial1"},
-                "percent": 0.23
-            },
-            {
-                "material": {"name": "testMaterial2"},
-                "percent": 0.43
-            }
-        ],
-        "color": {
-            "name": "testColor",
-            "hexCode": "#4566ff"
-        },
-        "availableSizes": [
-            {
-                "size": {
-                    "americanSize": "amsz",
-                    "russianSize": "rusz"
-                }
-            }
-        ],
-        "maxSeriesCount": 10,
-        "brand": {
-            "name": "testBrand",
-            "madeIn": "CH"
-        },
-        "price": 100.01,
-        "salesPrice": 33.44,
-        "endDate": "2022-03-08T00:00:00",
-        "style": "testStyle",
-        "sportType": {
-            "name": "testSport"
-        },
-        "pattern": {
-            "name": "testPattenr"
-        },
-        "images": [
-            "64base string"
-        ]
-    };
-
-    console.log(JSON.stringify(testData));
-
-    let response2 = await fetch("https://api.barahol.kz/product/add/clothes",
-    {
-        method: "POST",
-        headers:
-            {
-                "Accept": "application/json; charset=utf-8",
-                "Content-Type": "application/json;charset=utf-8",
-                "Authorization": "Bearer " + localStorage.getItem("accessToken")
-            },
-        redirect: "follow",
-        body: JSON.stringify(testData)
-    });
-
-    console.log(response2.status);
-    
-
-}
-}
 
 async function createProductClothes(){
-    images = [];
-    
+
+    console.log(filesUploaded);
+
+    if(!filesUploaded){
+        return;
+    }
+
     var data = {};
 
     data["serialNumber"] = $("#serial_number").val();
@@ -395,7 +441,7 @@ async function createProductClothes(){
         let material = {name: $("#clothes_material" + i).val()};
         data["materials"].push({
             material, 
-            percent: parseFloat("0." + $("#clothes_material_percent" + i).val())
+            percent: parseFloat($("#clothes_material_percent" + i).val())
     });
     }
 
@@ -432,8 +478,8 @@ async function createProductClothes(){
 
     data["brand"]["madeIn"] = manufacturer;
 
-    data["price"] = parseFloat($("#product_base_price").val() + ".05");
-    data["salesPrice"] = parseFloat($("#product_sales_price").val() + ".05");
+    data["price"] = parseFloat($("#product_base_price").val() + ".0");
+    data["salesPrice"] = parseFloat($("#product_sales_price").val() + ".0");
 
 
     data["endDate"] = $("#expiration_date").val() + "T00:00:00";
@@ -445,44 +491,40 @@ async function createProductClothes(){
             name: $("#sport_type").val() != "Другое" ? $("#sport_type").val() : $("#other_sport_type").val() 
         };
     }
+    else {
+        data["sportType"] = {name: "none"};
+    }
 
     data["pattern"] = {
         name: $("#product_pattern").val() 
     };
 
+    data["images"] = [];
 
-    for(let i = 0; i < fileList.length; i++){
-        let file = fileList[i];
-        if (file.type && !file.type.startsWith('image/')) {
-            console.log('File is not an image.', file.type, file);
-            continue;
-          }
-        
-          const reader = new FileReader();
-      
-          reader.addEventListener('load', (event) => {
-            images.push(event.target.result.replace(/^data:image\/(png|jpg);base64,/, ""));
-            data["images"] = images;
-          });
+    for(let i  = 0; i < images.length; i++){
 
-          reader.addEventListener('progress', (event) => {
-            if (event.loaded && event.total) {
-              const percent = (event.loaded / event.total) * 100;
-              console.log(`Progress: ${Math.round(percent)}`);
-              $("#image-progress").text(`Progress: ${Math.round(percent)}`);
-            }
-          });
-      
-          reader.readAsDataURL(file);
+        let frmt = "png";
+
+        if(images[i].includes("png")){
+            frmt = "png";
+        }
+        else if(images[i].includes("jpg") || images[i].includes("jpeg")){
+            frmt = "jpg";
+        }
+
+        data["images"].push({
+            imageData: images[i],
+            format: frmt
+        });
     }
-
-    
 
     console.log(images);
 
     console.log(data);
     console.log(JSON.stringify(data));
 
+    $("#white-background").show();
+    
     let response = await fetch("https://api.barahol.kz/product/add/clothes",
     {
         method: "POST",
@@ -490,11 +532,289 @@ async function createProductClothes(){
             {
                 "Accept": "application/json; charset=utf-8",
                 "Content-Type": "application/json;charset=utf-8",
-                "Authorization": "Bearer " + localStorage.getItem("accessToken")
+                "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
             },
         redirect: "follow",
         body: JSON.stringify(data)
     });
+
+    
+    $("#white-background").hide();
+
+    console.log(response.status);
+
+    if(response.status == 200){
+        alert("Успех");
+    }
+    else if(response.status == 401){
+        refreshTokens();
+        createProductClothes();
+        return;
+    }
+    else {
+        alert("Отправьте скриншот этого сообщения Естаю \n\n" + response.status + " " + response.statusText + "\n" + JSON.stringify(data));
+    }
+}
+
+async function createProductShoes(){
+    console.log("Creating shoes product");
+    console.log(filesUploaded);
+
+    if(!filesUploaded){
+        return;
+    }
+
+    var data = {};
+
+    data["serialNumber"] = $("#serial_number").val();
+    data["name"] = $("#product_name").val();
+    data["description"] = $("#product_description").val();
+    data["category"] = {name: ($("#category_gender").val())};
+    data["shoesCategory"] = 
+    {name: ($("#subcategory").val() != "Другое" 
+    ? $("#subcategory").val() : $("#other_subcategory").val())};
+
+    data["merch"] = {name: $("#select_merch").val()};
+    data["season"] = {name: $("#season").val()};
+    data["material"] = {
+        name: (
+            $("#select_shoes_material").val() == "Другое" ? 
+            $("#other_shoes_material").val() 
+            : $("#select_shoes_material").val()
+        )};
+
+    data["color"] = {
+        name: $("#product_color").val(),
+        hexCode: $("#color_hex").val()
+
+    };
+
+    data["availableSizes"] = [];
+
+    let shoesSizeFrom = parseFloat($("#shoes_size_from").val());
+    let shoesSizeTo = parseFloat($("#shoes_size_to").val());
+    let interval = parseInt($("#shoes_size_interval").val());
+
+    for (let i = shoesSizeFrom; i <= shoesSizeTo; i += interval){
+        data["availableSizes"].push({
+            shoesSize: {size: (i + "")}
+        });
+    }
+    
+    data["maxSeriesCount"] = parseInt($("#max_series_count").val(), 10);
+    
+    data["brand"] = {};
+
+    let brand = $("#product_brand").val();
+    let manufacturer = $("#manufacturer").val();
+
+    if(brand == "Другое"){
+        data["brand"]["name"] = $("#other_brand").val();
+    }
+    else {
+        data["brand"]["name"] = brand;
+    }
+
+    data["brand"]["madeIn"] = manufacturer;
+
+    data["price"] = parseFloat($("#product_base_price").val() + ".0");
+    data["salesPrice"] = parseFloat($("#product_sales_price").val() + ".0");
+
+    data["endDate"] = $("#expiration_date").val() + "T00:00:00";
+
+    data["style"] = $("#product_style").val();
+
+    if(data["style"] == "Спортивный"){
+        data["sportType"] = {
+            name: $("#sport_type").val() != "Другое" ? $("#sport_type").val() : $("#other_sport_type").val() 
+        };
+    }
+    else {
+        data["sportType"] = {name: "none"};
+    }
+
+    data["images"] = [];
+
+    for(let i  = 0; i < images.length; i++){
+
+        let frmt = "png";
+
+        if(images[i].includes("png")){
+            frmt = "png";
+        }
+        else if(images[i].includes("jpg") || images[i].includes("jpeg")){
+            frmt = "jpg";
+        }
+
+        data["images"].push({
+            imageData: images[i],
+            format: frmt
+        });
+    }
+
+    console.log(images);
+
+    console.log(data);
+    console.log(JSON.stringify(data));
+
+    let response = await fetch("https://api.barahol.kz/product/add/shoes",
+    {
+        method: "POST",
+        headers:
+            {
+                "Accept": "application/json; charset=utf-8",
+                "Content-Type": "application/json;charset=utf-8",
+                "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+            },
+        redirect: "follow",
+        body: JSON.stringify(data)
+    });
+
+    $("#white-background").hide();
+
+    console.log(response.status);
+
+    if(response.status == 200){
+        alert("Успех");
+    }
+    else if(response.status == 401){
+        refreshTokens();
+        createProductShoes();
+        return;
+    }
+    else {
+        alert("Отправьте скриншот этого сообщения Естаю \n\n" + response.status + " " + response.statusText + "\n" + JSON.stringify(data));
+    }
+}
+
+async function createProductAccessories(){
+    console.log("Creating accessory product");
+    console.log(filesUploaded);
+
+    if(!filesUploaded){
+        return;
+    }
+
+    var data = {};
+
+    data["serialNumber"] = $("#serial_number").val();
+    data["name"] = $("#product_name").val();
+    data["description"] = $("#product_description").val();
+    data["category"] = {name: ($("#category_gender").val())};
+    data["accessoryCategory"] = 
+    {name: ($("#subcategory").val() != "Другое" 
+    ? $("#subcategory").val() : $("#other_subcategory").val())};
+
+    data["merch"] = {name: $("#select_merch").val()};
+    data["season"] = {name: $("#season").val()};
+    data["AccessoryMaterial"] = {
+        name: (
+            $("#accessory_material").val()
+        )};
+
+    data["color"] = {
+        name: $("#product_color").val(),
+        hexCode: $("#color_hex").val()
+
+    };
+
+    data["availableSizes"] = [];
+
+    let shoesSizeFrom = parseFloat($("#shoes_size_from").val());
+    let shoesSizeTo = parseFloat($("#shoes_size_to").val());
+
+    for (let i = shoesSizeFrom; i < shoesSizeTo; i += 0.5){
+        data["availableSizes"].push({
+            shoesSize: {size: (i + "")}
+        });
+    }
+    
+    data["maxSeriesCount"] = parseInt($("#max_series_count").val(), 10);
+    
+    data["brand"] = {};
+
+    let brand = $("#product_brand").val();
+    let manufacturer = $("#manufacturer").val();
+
+    if(brand == "Другое"){
+        data["brand"]["name"] = $("#other_brand").val();
+    }
+    else {
+        data["brand"]["name"] = brand;
+    }
+
+    data["brand"]["madeIn"] = manufacturer;
+
+    data["price"] = parseFloat($("#product_base_price").val() + ".0");
+    data["salesPrice"] = parseFloat($("#product_sales_price").val() + ".0");
+
+    data["endDate"] = $("#expiration_date").val() + "T00:00:00";
+
+    data["style"] = $("#product_style").val();
+
+    if(data["style"] == "Спортивный"){
+        data["sportType"] = {
+            name: $("#sport_type").val() != "Другое" ? $("#sport_type").val() : $("#other_sport_type").val() 
+        };
+    }
+    else {
+        data["sportType"] = {name: "none"};
+    }
+
+    data["images"] = [];
+
+    for(let i  = 0; i < images.length; i++){
+
+        let frmt = "png";
+
+        if(images[i].includes("png")){
+            frmt = "png";
+        }
+        else if(images[i].includes("jpg") || images[i].includes("jpeg")){
+            frmt = "jpg";
+        }
+
+        data["images"].push({
+            imageData: images[i],
+            format: frmt
+        });
+    }
+
+    console.log(images);
+
+    console.log(data);
+    console.log(JSON.stringify(data));
+
+    $("#white-background").show();
+
+    let response = await fetch("https://api.barahol.kz/product/add/accessories",
+    {
+        method: "POST",
+        headers:
+            {
+                "Accept": "application/json; charset=utf-8",
+                "Content-Type": "application/json;charset=utf-8",
+                "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+            },
+        redirect: "follow",
+        body: JSON.stringify(data)
+    });
+
+    $("#white-background").hide();
+
+    console.log(response.status);
+
+    if(response.status == 200){
+        alert("Успех");
+    }
+    else if(response.status == 401){
+        refreshTokens();
+        createProductAccessories();
+        return;
+    }
+    else {
+        alert("Отправьте скриншот этого сообщения Естаю \n\n" + response.status + " " + response.statusText + "\n" + JSON.stringify(data));
+    }
 }
 
 function getBase64Image(img) {
@@ -513,5 +833,115 @@ function getBase64Image(img) {
     // will re-encode the image.
     var dataURL = canvas.toDataURL("image/png");
 
-    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    return dataURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+}
+
+async function refreshTokens(){
+
+    let checkToken = await fetch("https://api.barahol.kz/account/info", {
+    method: "POST",
+        headers: {
+            "Accept": "application/json; charset=utf-8",
+            "Content-Type": "application/json;charset=utf-8",
+            "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+        }
+    });
+
+    if(checkToken.status == 200){
+        console.log("Tokens are valid");
+        $("#main_body").show();
+        $("#login_form").hide();
+        return;
+    }
+
+    let newTokensResponse = await fetch("https://api.barahol.kz/account/token/refresh",
+    {
+        method: "POST",
+        headers: {
+            "Accept": "application/json; charset=utf-8",
+            "Content-Type": "application/json;charset=utf-8",
+            "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+        },
+        body: JSON.stringify({"refreshToken": sessionStorage.getItem("refreshToken")})
+    });
+
+    if(newTokensResponse.status == 200){
+        let newTokens = await newTokensResponse.json();
+        sessionStorage.setItem("accessToken", newTokens["accessToken"]);
+        sessionStorage.setItem("refreshToken", newTokens["refreshToken"]);
+        console.log("refreshed tokens");
+        $("#main_body").show();
+        $("#login_form").hide();
+    }
+}
+
+
+
+async function loadProducts(){
+
+
+    $("#white-background").show();
+
+    let result = await fetch("https://api.barahol.kz/admin/product/get-ordered?page=" + page + "&limit=10", {
+        method: "GET",
+            headers:
+        {
+            "Accept": "application/json; charset=utf-8",
+            "Content-Type": "application/json;charset=utf-8",
+            "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+        }
+    });
+
+    if(result.status != 200){
+        
+        return;
+    }
+
+    let products_data = await result.json();
+
+    console.log(products_data);
+
+    for(let i =0; i < products_data["products"].length; i++){
+
+        console.log(products_data["products"][i]["productId"]);
+        
+        let div = document.createElement("div");
+        div.classList.add("product");
+
+        let img = document.createElement("img");
+
+        img.src = "https://barahol.kz/ProductImages/" + products_data["products"][i]["productImages"][0]["imageSource"];
+        
+        console.log(img.src);
+        img.alt = "asd";
+        img.width = "100";
+ 
+        div.appendChild(img);
+
+        let description = document.createElement("div");
+
+        div.appendChild(description);
+
+        let product_name = document.createElement("p");
+        product_name.textContent = "name: " + products_data["products"][i]["productName"];
+
+        
+        let price = document.createElement("p");
+        price.textContent = "price: " + products_data["products"][i]["salesPrice"];
+
+        description.appendChild(product_name);
+
+        description.appendChild(price);
+        $("#products").append(div);
+        div.addEventListener("click", function(){
+            window.location = "/orders.html?productId=" + products_data["products"][i]["productId"];
+        });
+    }
+
+    if(products_data["products"].length > 0){
+        page++;
+        console.log(page);
+    }
+     
+    $("#white-background").hide();
 }

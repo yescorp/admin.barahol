@@ -1,0 +1,15 @@
+.series {
+    border: 1px solid silver;
+    display: flex;
+    overflow: scroll;
+    width: 95%;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.order {
+    border: 1px solid silver;
+    white-space: pre-line;
+    padding: 10px;
+    margin-left: 5px;
+}

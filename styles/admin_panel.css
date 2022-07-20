@@ -1,3 +1,7 @@
+body{
+    position: relative;
+}
+
 form {
     margin: 20px auto;
     width: 500px;
@@ -8,6 +12,10 @@ form {
 }
 
 #shoes_material {
+    display: none;
+}
+
+#accessory_material_div {
     display: none;
 }
 
@@ -30,6 +38,71 @@ form {
     background-color: cornflowerblue !important;
 }
 
+#main_body{
+    margin: 10px 20%;
+    display: none;
+    position: relative;
+}
+
 #product_info{
-    /*display: none;*/
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 30%;
+    background-color: white;
+    margin: 0 auto;
+    z-index: 2;
+}
+
+#white-background{
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    display: none;
+    margin: 0 auto;
+}
+
+#exit_creation {
+    position: absolute;
+    width: 50px;
+    top: 0;
+    right: 50px;
+    display: none;
+    z-index: 2;
+}
+
+#products {
+    margin: 10px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 3;
+    row-gap: 10px;
+    column-gap: 10px;
+    
+    flex-basis: auto;
+}
+
+.product{
+    padding: 20px;
+    border: 1px solid silver;
+    width: calc(33% - 5px);
+}
+
+.product:hover{
+    background-color: rgba(173, 216, 230, 0.438);
+    cursor: pointer;
+}
+
+#pagination {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.spinner {
+    position: block;
+    margin: 200px auto;
 }
